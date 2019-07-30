@@ -50,22 +50,48 @@ int main(int argc, const char** argv) {
         save(out);
     }
     
+    bool isDirty = false;
+    bool ctrlqTimes = 1;
     int key = -1;
-    do {
+    for(;;) {
         termEditorRender();
         key = termEditorUpdate();
         switch(key) {
         case KEY_CTRL_S: {
             int written = save(out);
             termEditorOut("%d bytes written to %s", written, fname);
+            isDirty = false;
         } break;
             
         case KEY_CTRL_C:
         case KEY_CTRL_D:
-            termEditorOut("press CTRL-Q to exit");
+            termEditorStatus("press CTRL-Q to quit");
+            break;
+            
+        case KEY_TAB:
+            for(int i = 0; i < 4; ++i) termEditorInsert(' ');
+            isDirty = true;
+            break;
+            
+            case KEY_CTRL_Q:
+            if(isDirty && ctrlqTimes) {
+                termEditorStatus("unsaved changes, press CTRL-Q again to confirm");
+                ctrlqTimes -= 1;
+                continue;
+            }
+            goto cleanup;
+            break;
+            
+            
+        default:
+            isDirty = true;
             break;
         }
-    } while(key != KEY_CTRL_Q);
+        ctrlqTimes = 1;
+        termEditorStatus("");
+    }
+    
+cleanup:
     termEditorDeinit();
     fclose(out);
 }
