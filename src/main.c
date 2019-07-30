@@ -51,12 +51,11 @@ int main(int argc, const char** argv) {
     }
 
     bool isDirty = false;
-    bool ctrlqTimes = 1;
-    int key = -1;
+    int ctrlqTimes = 1;
     for(;;) {
+        bool clearMessage = true;
         termEditorRender();
-        key = termEditorUpdate();
-        switch(key) {
+        switch(termEditorUpdate()) {
         case KEY_CTRL_S: {
             int written = save(out);
             termEditorOut("%d bytes written to %s", written, fname);
@@ -66,6 +65,7 @@ int main(int argc, const char** argv) {
         case KEY_CTRL_C:
         case KEY_CTRL_D:
             termEditorStatus("press CTRL-Q to quit");
+            clearMessage = false;
             break;
 
         case KEY_TAB:
@@ -76,6 +76,7 @@ int main(int argc, const char** argv) {
             case KEY_CTRL_Q:
             if(isDirty && ctrlqTimes) {
                 termEditorStatus("unsaved changes, press CTRL-Q again to confirm");
+                clearMessage = false;
                 ctrlqTimes -= 1;
                 continue;
             }
@@ -87,7 +88,7 @@ int main(int argc, const char** argv) {
             break;
         }
         ctrlqTimes = 1;
-        termEditorStatus("");
+        if(clearMessage) termEditorStatus("");
     }
 
 cleanup:
