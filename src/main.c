@@ -82,28 +82,6 @@ int main(int argc, const char** argv) {
             goto cleanup;
             break;
 
-        case '{':
-            termEditorInsert('}');
-            termEditorLeft();
-            isDirty = true;
-            break;
-        case '(':
-            termEditorInsert(')');
-            termEditorLeft();
-            isDirty = true;
-            break;
-        case '[':
-            termEditorInsert(']');
-            termEditorLeft();
-            isDirty = true;
-            break;
-        case '\"':
-        case '\'':
-            termEditorInsert(key);
-            termEditorLeft();
-            isDirty = true;
-            break;
-
         default:
             isDirty = true;
             break;
