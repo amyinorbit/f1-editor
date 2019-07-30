@@ -17,7 +17,7 @@ char* readFile(FILE* in) {
     fseek(in, 0, SEEK_END);
     int length = ftell(in);
     fseek(in, 0, SEEK_SET);
-    
+
     char* data = malloc(length + 1);
     fread(data, 1, length, in);
     data[length] = '\0';
@@ -38,10 +38,10 @@ int save(FILE* out) {
 int main(int argc, const char** argv) {
     if(argc != 2) termError("f1", 1, "not enough arguments (f1 [file])");
     const char* fname = argv[1];
-    
+
     char* existing = readFile(fopen(fname, "rb"));
     FILE* out = fopen(fname, "wb");
-    
+
     if(!out) termError("f1", 1, "cannot open '%s' for writing", fname);
     termEditorInit(fname);
     if(existing) {
@@ -49,7 +49,7 @@ int main(int argc, const char** argv) {
         free(existing);
         save(out);
     }
-    
+
     bool isDirty = false;
     bool ctrlqTimes = 1;
     int key = -1;
@@ -62,17 +62,17 @@ int main(int argc, const char** argv) {
             termEditorOut("%d bytes written to %s", written, fname);
             isDirty = false;
         } break;
-            
+
         case KEY_CTRL_C:
         case KEY_CTRL_D:
             termEditorStatus("press CTRL-Q to quit");
             break;
-            
+
         case KEY_TAB:
             for(int i = 0; i < 4; ++i) termEditorInsert(' ');
             isDirty = true;
             break;
-            
+
             case KEY_CTRL_Q:
             if(isDirty && ctrlqTimes) {
                 termEditorStatus("unsaved changes, press CTRL-Q again to confirm");
@@ -81,7 +81,7 @@ int main(int argc, const char** argv) {
             }
             goto cleanup;
             break;
-            
+
         case '{':
             termEditorInsert('}');
             termEditorLeft();
@@ -103,7 +103,7 @@ int main(int argc, const char** argv) {
             termEditorLeft();
             isDirty = true;
             break;
-            
+
         default:
             isDirty = true;
             break;
@@ -111,7 +111,7 @@ int main(int argc, const char** argv) {
         ctrlqTimes = 1;
         termEditorStatus("");
     }
-    
+
 cleanup:
     termEditorDeinit();
     fclose(out);
